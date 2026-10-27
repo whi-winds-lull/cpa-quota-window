@@ -11,8 +11,8 @@
   7. host.model.execute 触发后，结果被记录且带 reset_at
 
 用法：
-  python tests/host_sim.py dist/windows_amd64/window-anchor.dll
-  python tests/host_sim.py dist/linux_amd64/window-anchor.so
+  python tests/host_sim.py dist/windows_amd64/cpa-quota-window.dll
+  python tests/host_sim.py dist/linux_amd64/cpa-quota-window.so
 """
 import base64
 import ctypes
@@ -143,7 +143,7 @@ def host_call(_ctx, method, req_ptr, req_len, resp_ptr):
 
 
 CONFIG_YAML = b"""timezone: Asia/Shanghai
-state_file: state/window-anchor.json
+state_file: state/cpa-quota-window.json
 plans:
   - auth_id: "11111111-1111-4111-8111-111111111111"
     model: "gpt-6-luna"
@@ -247,12 +247,12 @@ def main():
     check("注册了带 Menu 的 /status 资源", "/status" in resources and bool(resources["/status"].get("Menu")),
           str(list(resources)))
     check("注册了 /app.js", "/app.js" in resources, str(list(resources)))
-    check("注册了 status 路由", ("GET", "/plugins/window-anchor/status") in routes, str(routes))
-    check("注册了 accounts 路由", ("GET", "/plugins/window-anchor/accounts") in routes, str(routes))
-    check("注册了 run 路由", ("POST", "/plugins/window-anchor/run") in routes, str(routes))
+    check("注册了 status 路由", ("GET", "/plugins/cpa-quota-window/status") in routes, str(routes))
+    check("注册了 accounts 路由", ("GET", "/plugins/cpa-quota-window/accounts") in routes, str(routes))
+    check("注册了 run 路由", ("POST", "/plugins/cpa-quota-window/run") in routes, str(routes))
 
     print("\n[4] management.handle -> /status")
-    status = mgmt_json(plugin, "/plugins/window-anchor/status")
+    status = mgmt_json(plugin, "/plugins/cpa-quota-window/status")
     plans = status.get("plans") or []
     check("plans 数量为 3（2 codex + 1 antigravity）", len(plans) == 3, f"实际 {len(plans)}")
     if plans:
@@ -268,7 +268,7 @@ def main():
             check("antigravity 模型正确", ag[0].get("model") == "gemini-2.5-pro", str(ag[0].get("model")))
 
     print("\n[5] management.handle -> /accounts")
-    acc = mgmt_json(plugin, "/plugins/window-anchor/accounts")
+    acc = mgmt_json(plugin, "/plugins/cpa-quota-window/accounts")
     accounts = acc.get("accounts") or []
     check("返回了 3 个账号（两个 provider）", len(accounts) == 3, f"实际 {len(accounts)}")
 
@@ -292,7 +292,7 @@ def main():
 
     print("\n[7] 手动触发（host.model.execute）")
     MODEL_CALLS.clear()
-    triggered = mgmt_json(plugin, "/plugins/window-anchor/run", "POST",
+    triggered = mgmt_json(plugin, "/plugins/cpa-quota-window/run", "POST",
                           {"auth_id": "11111111-1111-4111-8111-111111111111"})
     check("触发了 1 个账号", triggered.get("triggered") == 1, str(triggered))
     time.sleep(1.2)
@@ -307,7 +307,7 @@ def main():
         check("指定了 forced_provider=codex", req.get("forced_provider") == "codex",
               str(req.get("forced_provider")))
 
-    status2 = mgmt_json(plugin, "/plugins/window-anchor/status")
+    status2 = mgmt_json(plugin, "/plugins/cpa-quota-window/status")
     results = status2.get("results") or []
     check("执行记录里有 1 条", len(results) == 1, f"实际 {len(results)}")
     if results:

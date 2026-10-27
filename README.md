@@ -1,11 +1,11 @@
-# window-anchor
+# cpa-quota-window
 
 CLIProxyAPI（CPA）原生插件。按账号维护每日触发计划，用一次最小请求把该账号的 5 小时额度窗口起点固定到指定时刻。
 
 支持 Codex 与 Gemini / Antigravity 两类上游账号。
 
-- 仓库：<https://github.com/whi-winds-lull/window-anchor>
-- 预编译产物：<https://github.com/whi-winds-lull/window-anchor/releases>
+- 仓库：<https://github.com/whi-winds-lull/cpa-quota-window>
+- 预编译产物：<https://github.com/whi-winds-lull/cpa-quota-window/releases>
 - 许可：MIT
 
 ---
@@ -14,7 +14,7 @@ CLIProxyAPI（CPA）原生插件。按账号维护每日触发计划，用一次
 
 本项目在 [cpa-window-starter](https://github.com/ZenGeekLabs/cpa-window-starter) 的调度与 ABI 骨架基础上重构，主要差异如下。
 
-| 维度 | cpa-window-starter | window-anchor |
+| 维度 | cpa-window-starter | cpa-quota-window |
 | --- | --- | --- |
 | 计划作用域 | 每个 provider 一个计划；该计划下的账号共享一组 `times` 与一个 `model` | 每个账号一条计划，各自持有 `times` 与 `model` |
 | 触发行为 | 到达触发时刻后，遍历该 provider 下所有已选账号逐个发送 | 到达触发时刻后，仅向该条计划对应的账号发送 |
@@ -54,21 +54,21 @@ CLIProxyAPI（CPA）原生插件。按账号维护每日触发计划，用一次
 
    | CPA 所在平台 | 安装包 |
    | --- | --- |
-   | Linux x86_64 | `window-anchor_<version>_linux_amd64.zip` |
-   | Linux ARM64 | `window-anchor_<version>_linux_arm64.zip` |
-   | macOS Intel | `window-anchor_<version>_darwin_amd64.zip` |
-   | macOS Apple Silicon | `window-anchor_<version>_darwin_arm64.zip` |
-   | Windows x86_64 | `window-anchor_<version>_windows_amd64.zip` |
+   | Linux x86_64 | `cpa-quota-window_<version>_linux_amd64.zip` |
+   | Linux ARM64 | `cpa-quota-window_<version>_linux_arm64.zip` |
+   | macOS Intel | `cpa-quota-window_<version>_darwin_amd64.zip` |
+   | macOS Apple Silicon | `cpa-quota-window_<version>_darwin_arm64.zip` |
+   | Windows x86_64 | `cpa-quota-window_<version>_windows_amd64.zip` |
 
 2. 将动态库放入 CPA 的插件目录，遵循宿主的路径约定：
 
    ```
-   plugins/<GOOS>/<GOARCH>/window-anchor.so     # Linux
-   plugins/<GOOS>/<GOARCH>/window-anchor.dylib  # macOS
-   plugins/<GOOS>/<GOARCH>/window-anchor.dll    # Windows
+   plugins/<GOOS>/<GOARCH>/cpa-quota-window.so     # Linux
+   plugins/<GOOS>/<GOARCH>/cpa-quota-window.dylib  # macOS
+   plugins/<GOOS>/<GOARCH>/cpa-quota-window.dll    # Windows
    ```
 
-3. 在 `config.yaml` 的 `plugins.configs` 下增加 `window-anchor` 配置块（见下节）。
+3. 在 `config.yaml` 的 `plugins.configs` 下增加 `cpa-quota-window` 配置块（见下节）。
 
 4. 重启 CPA，或在管理页重新加载插件。
 
@@ -83,11 +83,11 @@ plugins:
   enabled: true
   dir: "plugins"
   configs:
-    window-anchor:
+    cpa-quota-window:
       enabled: true
       priority: 1
       timezone: "Asia/Shanghai"
-      state_file: "plugins/state/window-anchor.json"
+      state_file: "plugins/state/cpa-quota-window.json"
       plans:
         - provider: "codex"
           auth_id: "codex-11111111-alice@example.com-plus.json"
@@ -105,7 +105,7 @@ plugins:
 | 字段 | 必填 | 说明 |
 | --- | --- | --- |
 | `timezone` | 是 | IANA 时区名。**留空会被解析为 UTC**，导致定时整体偏移。 |
-| `state_file` | 否 | 执行记录与去重状态的存放路径，所属目录需可写。默认 `plugins/state/window-anchor.json`。 |
+| `state_file` | 否 | 执行记录与去重状态的存放路径，所属目录需可写。默认 `plugins/state/cpa-quota-window.json`。 |
 | `plans[].provider` | 否 | `codex` 或 `antigravity`；省略时按 `codex` 处理。 |
 | `plans[].auth_id` | 是 | CPA 中的账号 ID，取值为认证文件名，例如 `codex-xxxx@example.com-plus.json`。不是邮箱，也不是内部索引。 |
 | `plans[].model` | 是 | 该账号实际支持的模型名。填写不支持的值会在触发时返回 400 / 404。 |
@@ -123,7 +123,7 @@ plugins:
 打开资源页：
 
 ```
-http://<CPA 地址>:<端口>/v0/resource/plugins/window-anchor/status
+http://<CPA 地址>:<端口>/v0/resource/plugins/cpa-quota-window/status
 ```
 
 页面由三部分组成：
@@ -144,12 +144,12 @@ http://<CPA 地址>:<端口>/v0/resource/plugins/window-anchor/status
 
 | 方法 | 路径 | 用途 |
 | --- | --- | --- |
-| GET | `/plugins/window-anchor/status` | 计划列表、下次触发时刻、执行记录 |
-| GET | `/plugins/window-anchor/accounts` | CPA 账号列表 |
-| POST | `/plugins/window-anchor/run` | 立即触发；`{"auth_id": ""}` 表示全部 |
-| POST | `/plugins/window-anchor/history/delete` | 按 ID 删除执行记录；`{"ids": [...]}` |
+| GET | `/plugins/cpa-quota-window/status` | 计划列表、下次触发时刻、执行记录 |
+| GET | `/plugins/cpa-quota-window/accounts` | CPA 账号列表 |
+| POST | `/plugins/cpa-quota-window/run` | 立即触发；`{"auth_id": ""}` 表示全部 |
+| POST | `/plugins/cpa-quota-window/history/delete` | 按 ID 删除执行记录；`{"ids": [...]}` |
 
-免鉴权资源（位于 `/v0/resource/plugins/window-anchor/`）：
+免鉴权资源（位于 `/v0/resource/plugins/cpa-quota-window/`）：
 
 | 路径 | 内容 |
 | --- | --- |
@@ -196,13 +196,13 @@ http://<CPA 地址>:<端口>/v0/resource/plugins/window-anchor/status
 
 ```bash
 # Linux
-CGO_ENABLED=1 go build -buildmode=c-shared -o dist/linux_amd64/window-anchor.so .
+CGO_ENABLED=1 go build -buildmode=c-shared -o dist/linux_amd64/cpa-quota-window.so .
 
 # macOS
-CGO_ENABLED=1 go build -buildmode=c-shared -o dist/darwin_arm64/window-anchor.dylib .
+CGO_ENABLED=1 go build -buildmode=c-shared -o dist/darwin_arm64/cpa-quota-window.dylib .
 
 # Windows
-CGO_ENABLED=1 go build -buildmode=c-shared -o dist/windows_amd64/window-anchor.dll .
+CGO_ENABLED=1 go build -buildmode=c-shared -o dist/windows_amd64/cpa-quota-window.dll .
 ```
 
 跨平台构建与打包：
@@ -217,7 +217,7 @@ python3 scripts/package.py           # 生成 release/ 下的 zip 与 checksums.
 `tests/host_sim.py` 是一个宿主模拟器：通过 ctypes 加载动态库，构造 CPA 的 C ABI 与回调，完整执行注册、配置解析、计划渲染、账号列举、手动触发、负向校验等 42 项断言。
 
 ```bash
-python3 tests/host_sim.py dist/windows_amd64/window-anchor.dll
+python3 tests/host_sim.py dist/windows_amd64/cpa-quota-window.dll
 ```
 
 `tests/mock_cpa.py` 启动一个模拟 CPA 的 HTTP 服务，用于在浏览器中验证页面渲染，管理接口固定返回 401，因此它只能验证只读降级路径。
@@ -231,6 +231,6 @@ python3 tests/mock_cpa.py 18765
 推送 `v*` 标签会触发 GitHub Actions，构建五个平台的动态库、打包并创建 Release。
 
 ```bash
-git tag -a v0.4.3 -m "window-anchor v0.4.3"
+git tag -a v0.4.3 -m "cpa-quota-window v0.4.3"
 git push origin v0.4.3
 ```

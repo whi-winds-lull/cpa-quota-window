@@ -2,7 +2,7 @@
 """把 dist/ 下五个平台的动态库打成插件商店格式的发布包。
 
 产物：
-  release/window-anchor_<version>_<platform>.zip   每个包含一个动态库
+  release/cpa-quota-window_<version>_<platform>.zip   每个包含一个动态库
   release/checksums.txt                            sha256 校验和
 """
 import hashlib
@@ -13,7 +13,7 @@ import zipfile
 
 PLATFORMS = ["darwin_amd64", "darwin_arm64", "linux_amd64", "linux_arm64", "windows_amd64"]
 EXTENSIONS = {"darwin": "dylib", "linux": "so", "windows": "dll"}
-LIBRARY = "window-anchor"
+LIBRARY = "cpa-quota-window"
 
 root = pathlib.Path(__file__).resolve().parents[1]
 

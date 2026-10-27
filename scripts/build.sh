@@ -54,6 +54,6 @@ mkdir -p "$out_dir"
 
 CGO_ENABLED=1 GOOS="$os_name" GOARCH="$arch_name" \
   go build -trimpath -ldflags="$ldflags" -buildmode=c-shared \
-  -o "$out_dir/window-anchor.$extension" .
+  -o "$out_dir/cpa-quota-window.$extension" .
 
-printf '%s\n' "$out_dir/window-anchor.$extension"
+printf '%s\n' "$out_dir/cpa-quota-window.$extension"

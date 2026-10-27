@@ -1,8 +1,8 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
-const RES_BASE = CPAPluginSession.resourcePrefix(window) + '/v0/resource/plugins/window-anchor';
+const RES_BASE = CPAPluginSession.resourcePrefix(window) + '/v0/resource/plugins/cpa-quota-window';
 const MGMT_ROOT = CPAPluginSession.resourcePrefix(window) + '/v0/management';
-const API = MGMT_ROOT + '/plugins/window-anchor';
+const API = MGMT_ROOT + '/plugins/cpa-quota-window';
 
 let managementKey = '';
 let connected = false;

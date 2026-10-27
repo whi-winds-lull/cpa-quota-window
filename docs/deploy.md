@@ -1,6 +1,6 @@
 # 部署到 CPA（Linux 服务器）
 
-从零到验证通过，按顺序做。假设你已经下载了 `window-anchor_0.1.0_linux_amd64.zip`。
+从零到验证通过，按顺序做。假设你已经下载了 `cpa-quota-window_0.1.0_linux_amd64.zip`。
 
 ---
 
@@ -31,7 +31,7 @@ curl -sI http://127.0.0.1:8317/v0/management/plugins | grep -i x-cpa-support-plu
 **本地 Windows**（PowerShell）：
 
 ```powershell
-scp D:\Downloads\window-anchor_0.1.0_linux_amd64.zip root@你的服务器IP:/tmp/
+scp D:\Downloads\cpa-quota-window_0.1.0_linux_amd64.zip root@你的服务器IP:/tmp/
 ```
 
 也可以直接用 Xftp 拖到 `/tmp`。
@@ -40,18 +40,18 @@ scp D:\Downloads\window-anchor_0.1.0_linux_amd64.zip root@你的服务器IP:/tmp
 
 ```bash
 cd /tmp
-unzip -o window-anchor_0.1.0_linux_amd64.zip
-ls -lh window-anchor.so
+unzip -o cpa-quota-window_0.1.0_linux_amd64.zip
+ls -lh cpa-quota-window.so
 # 应该是 2 MB 左右
-file window-anchor.so
+file cpa-quota-window.so
 # 应该显示 ELF 64-bit LSB shared object, x86-64
 ```
 
 可选：核对校验和
 
 ```bash
-sha256sum window-anchor.so
-# 和 checksums.txt 里 window-anchor_0.1.0_linux_amd64.zip 那行比对
+sha256sum cpa-quota-window.so
+# 和 checksums.txt 里 cpa-quota-window_0.1.0_linux_amd64.zip 那行比对
 ```
 
 ---
@@ -95,11 +95,11 @@ ps -ef | grep cli-proxy | grep -v grep
 
 ```bash
 # Docker 情况
-cp /tmp/window-anchor.so /opt/cliproxyapi/plugins/
-chmod 644 /opt/cliproxyapi/plugins/window-anchor.so
+cp /tmp/cpa-quota-window.so /opt/cliproxyapi/plugins/
+chmod 644 /opt/cliproxyapi/plugins/cpa-quota-window.so
 
 # 非 Docker 情况
-cp /tmp/window-anchor.so /你的CPA目录/plugins/
+cp /tmp/cpa-quota-window.so /你的CPA目录/plugins/
 ```
 
 确认 `plugins` 目录和 `config.yaml` 里的 `plugins.dir` 一致（默认就是 `plugins`）。
@@ -114,7 +114,7 @@ cp /tmp/window-anchor.so /你的CPA目录/plugins/
 cp /opt/cliproxyapi/config.yaml /opt/cliproxyapi/config.yaml.bak-$(date +%Y%m%d)
 ```
 
-找到 `plugins:` 这一段。**只往里加 `window-anchor`，不要动已有的 `cpa-window-starter` 配置结构**。
+找到 `plugins:` 这一段。**只往里加 `cpa-quota-window`，不要动已有的 `cpa-window-starter` 配置结构**。
 
 ```yaml
 plugins:
@@ -126,11 +126,11 @@ plugins:
       enabled: false     # ← 建议改这里
 
     # ↓ 新增这一段
-    window-anchor:
+    cpa-quota-window:
       enabled: true
       priority: 1
       timezone: "Asia/Shanghai"          # 不能留空，空值会被解析成 UTC
-      state_file: "plugins/state/window-anchor.json"
+      state_file: "plugins/state/cpa-quota-window.json"
       plans:
         - auth_id: "你的账号A的auth_id"
           model: "gpt-6-luna"
@@ -156,7 +156,7 @@ plugins:
 
 ## 第 5 步：停掉旧插件的定时
 
-`cpa-window-starter` 和 `window-anchor` 会同时给同一个账号发请求。
+`cpa-window-starter` 和 `cpa-quota-window` 会同时给同一个账号发请求。
 
 旧插件现在的配置是"一个账号 + 每天 05:30/08:30 两个时间点"，**08:30 那次落在 05:30 开出的 5h 窗口内，只会烧额度不会开新窗**。
 
@@ -180,7 +180,7 @@ systemctl restart cliproxyapi
 K="你的management密钥"   # config.yaml 里的 remote-management.secret-key
 
 curl -s http://127.0.0.1:8317/v0/management/plugins \
-  -H "Authorization: Bearer $K" | python3 -m json.tool | grep -A8 window-anchor
+  -H "Authorization: Bearer $K" | python3 -m json.tool | grep -A8 cpa-quota-window
 ```
 
 要看到：
@@ -197,7 +197,7 @@ curl -s http://127.0.0.1:8317/v0/management/plugins \
 curl -sI http://127.0.0.1:8317/v0/management/plugins | grep -i support
 
 # 2. 架构对不对
-file /opt/cliproxyapi/plugins/window-anchor.so
+file /opt/cliproxyapi/plugins/cpa-quota-window.so
 
 # 3. glibc 版本（包是 2.17 目标，正常系统都满足）
 ldd --version | head -1
@@ -213,7 +213,7 @@ docker logs --tail 100 cli-proxy-api 2>&1 | grep -i plugin
 浏览器访问：
 
 ```
-http://你的服务器:8317/v0/resource/plugins/window-anchor/
+http://你的服务器:8317/v0/resource/plugins/cpa-quota-window/
 ```
 
 应该看到：
@@ -231,7 +231,7 @@ http://你的服务器:8317/v0/resource/plugins/window-anchor/
 先手动打一枪，确认真的能开窗：
 
 ```bash
-curl -X POST http://127.0.0.1:8317/v0/management/plugins/window-anchor/run \
+curl -X POST http://127.0.0.1:8317/v0/management/plugins/cpa-quota-window/run \
   -H "Authorization: Bearer $K" \
   -H "Content-Type: application/json" \
   -d '{"auth_id":"你的账号A的auth_id"}'

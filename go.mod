@@ -1,4 +1,4 @@
-module window-anchor
+module cpa-quota-window
 
 go 1.24
 

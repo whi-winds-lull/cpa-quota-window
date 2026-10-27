@@ -37,7 +37,7 @@ import (
 	"time"
 	"unsafe"
 
-	"window-anchor/internal/wa"
+	"cpa-quota-window/internal/wa"
 )
 
 //go:embed web/*

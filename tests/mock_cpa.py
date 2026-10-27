@@ -2,7 +2,7 @@
 """模拟 CPA 宿主，用来在无头浏览器里验证插件页面渲染。
 
 启动：python tests/mock_cpa.py [port]
-然后访问 http://127.0.0.1:<port>/v0/resource/plugins/window-anchor/status
+然后访问 http://127.0.0.1:<port>/v0/resource/plugins/cpa-quota-window/status
 """
 import json
 import pathlib
@@ -109,7 +109,7 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/v0/management/"):
             return self._send(401, json.dumps({"error": "unauthorized"}))
 
-        if path.startswith("/v0/resource/plugins/window-anchor/"):
+        if path.startswith("/v0/resource/plugins/cpa-quota-window/"):
             name = path.rsplit("/", 1)[-1] or "status"
             if name in ("", "status"):
                 name = "status.html"
@@ -141,7 +141,7 @@ class Handler(BaseHTTPRequestHandler):
 def main() -> int:
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 18765
     server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print(f"mock CPA: http://127.0.0.1:{port}/v0/resource/plugins/window-anchor/status")
+    print(f"mock CPA: http://127.0.0.1:{port}/v0/resource/plugins/cpa-quota-window/status")
     print("管理 API 故意返回 401，用来验证只读降级路径")
     server.serve_forever()
     return 0

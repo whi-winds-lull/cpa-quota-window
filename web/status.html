@@ -16,7 +16,7 @@
 .acctNext{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
 .acctNext.pending{color:var(--accent)}
 </style>
-<script src="./cpa-session.js" defer></script><script src="./i18n.js" defer></script><script src="./timezone-picker.js" defer></script><script src="./history.js" defer></script><script src="./ui.js" defer></script><script src="./app.js?v=1.0.0" defer></script>
+<script src="./cpa-session.js" defer></script><script src="./i18n.js" defer></script><script src="./timezone-picker.js" defer></script><script src="./history.js" defer></script><script src="./ui.js" defer></script><script src="./app.js?v=1.1.0" defer></script>
 </head>
 <body><main>
 <header class="pageHeader">
@@ -25,7 +25,7 @@
 <section id="demoNotice" class="demoNotice" hidden><span class="demoDot" aria-hidden="true"></span><span data-i18n="demo"></span></section>
 <section id="connectionPanel" class="panel login"><div><h2 data-i18n="login"></h2><p id="connectionHint" class="muted"></p><p class="muted" data-i18n="loginHelp"></p></div><div class="inline"><a id="nativeSettings" class="buttonLink" href="/management.html#/plugins" target="_top" data-i18n="openSettings"></a><button id="connectButton" type="button" class="secondary" data-i18n="reconnect"></button></div></section>
 <div id="workspace" hidden>
- <div class="providerBar"><nav class="providerTabs" aria-label="Provider"><button id="codexTab" type="button"><img class="providerMark openaiMark" src="./openai.png?v=1.0.0" width="22" height="22" alt="" aria-hidden="true">GPT / Codex</button><button id="antigravityTab" type="button" class="secondary"><img class="providerMark geminiMark" src="./gemini.svg?v=1.0.0" width="22" height="22" alt="" aria-hidden="true">Gemini / Antigravity</button></nav><div id="headerActions" class="actions" hidden><span id="dirtyHint" class="muted" role="status"></span><button id="runButton" type="button" class="secondary" data-i18n="run"></button><button id="saveButton" type="submit" form="settingsForm" data-i18n="save"></button></div></div>
+ <div class="providerBar"><nav class="providerTabs" aria-label="Provider"><button id="codexTab" type="button"><img class="providerMark openaiMark" src="./openai.png?v=1.1.0" width="22" height="22" alt="" aria-hidden="true">GPT / Codex</button><button id="antigravityTab" type="button" class="secondary"><img class="providerMark geminiMark" src="./gemini.svg?v=1.1.0" width="22" height="22" alt="" aria-hidden="true">Gemini / Antigravity</button></nav><div id="headerActions" class="actions" hidden><span id="dirtyHint" class="muted" role="status"></span><button id="runButton" type="button" class="secondary" data-i18n="run"></button><button id="saveButton" type="submit" form="settingsForm" data-i18n="save"></button></div></div>
  <section class="summary" aria-label="Schedule overview"><article class="nextSummary"><p data-i18n="next"></p><strong id="nextTrigger">—</strong><span id="timezoneLabel"></span></article><article><p data-i18n="selected"></p><strong id="selectedCount">0</strong><span data-i18n="perAccount"></span></article><article><p data-i18n="state"></p><strong id="scheduleState">—</strong><span id="runningHint"></span></article></section>
  <form id="settingsForm">
   <div class="settingsGrid">

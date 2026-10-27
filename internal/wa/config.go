@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const PluginID = "window-anchor"
-const Version = "1.0.0"
+const PluginID = "cpa-quota-window"
+const Version = "1.1.0"
 
 // Plan 是一个账号的独立计划：它有自己的时间表和模型，与其他账号互不影响。
 // Provider 区分 Codex 与 Antigravity，两者共用同一套锚定逻辑。
@@ -43,7 +43,7 @@ func DefaultConfig() Config {
 		Enabled:   true,
 		Timezone:  "Asia/Shanghai",
 		Plans:     []Plan{},
-		StateFile: "plugins/state/window-anchor.json",
+		StateFile: "plugins/state/cpa-quota-window.json",
 	}
 }
 
