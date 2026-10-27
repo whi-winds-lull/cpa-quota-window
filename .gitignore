@@ -1,0 +1,6 @@
+/dist/
+/release/
+/.build/
+*.log
+*.tmp
+state/

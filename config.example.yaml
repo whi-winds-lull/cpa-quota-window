@@ -1,0 +1,38 @@
+# 账号窗口锚定（window-anchor）
+#
+# 核心区别：plans 是数组，每个账号一条，各自有 times 和 model。
+# 这正是 cpa-window-starter 做不到的地方——它的 times 是所有账号共享的。
+#
+# 用法：把下面 configs 下的 window-anchor 整块合并进你的 CPA config.yaml。
+
+plugins:
+  enabled: true
+  dir: "plugins"
+  configs:
+    window-anchor:
+      enabled: true
+      priority: 1
+
+      # 不能留空。空字符串会被解析成 UTC，定时会整体偏 8 小时。
+      timezone: "Asia/Shanghai"
+
+      # 执行记录与去重状态，目录需可写
+      state_file: "plugins/state/window-anchor.json"
+
+      # 每个账号一条计划，互不影响
+      plans:
+        # 账号 A：开工前 4 小时锚定，让 10:30 成为新窗口起点
+        - auth_id: "把这里换成 CPA 里的账号 ID"
+          model: "gpt-6-luna"
+          times: ["05:30"]
+
+        # 账号 B：让窗口边界正好落在 13:30 复工时刻
+        - auth_id: "把这里换成另一个账号 ID"
+          model: "gpt-6-luna"
+          times: ["08:30"]
+
+        # 同一天多个时间点也可以，但间隔必须 >= 5 小时，
+        # 否则第二次请求只会消耗额度、不会开出新窗口。
+        # - auth_id: "..."
+        #   model: "gpt-6-luna"
+        #   times: ["05:30", "10:35", "15:40"]

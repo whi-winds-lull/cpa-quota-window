@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>账号窗口锚定</title>
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./timezone-picker.css">
+<style>
+.accountCard{flex-wrap:wrap}
+.accountPlan{display:flex;flex-wrap:wrap;gap:8px;align-items:center;width:100%;padding-left:26px;margin-top:8px;border-top:1px dashed var(--border);padding-top:8px}
+.accountPlan .timeList{display:flex;flex-wrap:wrap;gap:6px}
+.accountPlan .timeEntry{min-height:34px}
+.accountPlan .timeEntry input{min-height:32px;width:92px;font-size:14px;padding:4px 4px 4px 8px}
+.accountPlan .addTime{font-size:12px;padding:4px 10px;min-height:34px}
+.accountPlan .selectControl{min-width:150px;width:auto}
+.accountPlan select{min-height:34px;font-size:13px}
+.acctNext{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.acctNext.pending{color:var(--accent)}
+</style>
+<script src="./cpa-session.js" defer></script><script src="./i18n.js" defer></script><script src="./timezone-picker.js" defer></script><script src="./history.js" defer></script><script src="./ui.js" defer></script><script src="./app.js?v=1.0.0" defer></script>
+</head>
+<body><main>
+<header class="pageHeader">
+ <div class="headingBlock"><div class="titleRow"><span class="appIcon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.5V12l3.5 2" stroke-linecap="round"/></svg></span><h1 data-i18n="title">账号定时请求</h1><span class="version" id="ver"></span></div><p class="muted subtitle" data-i18n="subtitle"></p></div>
+</header>
+<section id="demoNotice" class="demoNotice" hidden><span class="demoDot" aria-hidden="true"></span><span data-i18n="demo"></span></section>
+<section id="connectionPanel" class="panel login"><div><h2 data-i18n="login"></h2><p id="connectionHint" class="muted"></p><p class="muted" data-i18n="loginHelp"></p></div><div class="inline"><a id="nativeSettings" class="buttonLink" href="/management.html#/plugins" target="_top" data-i18n="openSettings"></a><button id="connectButton" type="button" class="secondary" data-i18n="reconnect"></button></div></section>
+<div id="workspace" hidden>
+ <div class="providerBar"><nav class="providerTabs" aria-label="Provider"><button id="codexTab" type="button"><img class="providerMark openaiMark" src="./openai.png?v=1.0.0" width="22" height="22" alt="" aria-hidden="true">GPT / Codex</button><button id="antigravityTab" type="button" class="secondary"><img class="providerMark geminiMark" src="./gemini.svg?v=1.0.0" width="22" height="22" alt="" aria-hidden="true">Gemini / Antigravity</button></nav><div id="headerActions" class="actions" hidden><span id="dirtyHint" class="muted" role="status"></span><button id="runButton" type="button" class="secondary" data-i18n="run"></button><button id="saveButton" type="submit" form="settingsForm" data-i18n="save"></button></div></div>
+ <section class="summary" aria-label="Schedule overview"><article class="nextSummary"><p data-i18n="next"></p><strong id="nextTrigger">—</strong><span id="timezoneLabel"></span></article><article><p data-i18n="selected"></p><strong id="selectedCount">0</strong><span data-i18n="perAccount"></span></article><article><p data-i18n="state"></p><strong id="scheduleState">—</strong><span id="runningHint"></span></article></section>
+ <form id="settingsForm">
+  <div class="settingsGrid">
+   <section class="panel schedulePanel"><div class="sectionHeader"><div><p class="sectionStep" aria-hidden="true">01</p><h2>时区与总开关</h2></div><label class="switch"><input id="scheduleEnabled" type="checkbox"><span class="switchTrack" aria-hidden="true"></span><span data-i18n="automatic"></span></label></div>
+    <div class="scheduleBody"><div class="fields"><label><span class="fieldName" data-i18n="timezone"></span><div class="timezoneField"><input id="timezone" type="text" required autocomplete="off"><small id="zoneOffset" class="offset"></small></div><small data-i18n="zoneHelp"></small></label></div></div>
+   </section>
+   <section class="panel accountsPanel"><div class="sectionHeader"><div><p class="sectionStep" aria-hidden="true">02</p><h2 data-i18n="accounts"></h2></div><button id="refreshAccounts" type="button" class="secondary subtle" data-i18n="refreshAccounts"></button></div><p class="panelHelp muted">每个账号各自设置时间和模型，互不影响；填了时间的账号才会被触发。</p><p id="metadataHint" class="muted metadataHint"></p><div id="accountList" class="accountList"></div></section>
+  </div>
+ </form>
+ <section class="panel historyPanel" aria-labelledby="historyHeading">
+  <div class="sectionHeader"><div><h2 id="historyHeading" data-i18n="history"></h2><p class="muted" data-i18n="quotaHelp"></p></div><button id="refreshStatus" type="button" class="secondary subtle" data-i18n="refresh"></button></div>
+  <div class="historyToolbar">
+   <div class="historyDateControls"><button id="historyPrevDay" type="button" class="secondary iconButton" data-i18n-label="previousDay">‹</button><label class="historyDate"><span class="srOnly" data-i18n="historyDate"></span><input id="historyDate" type="date" required></label><button id="historyNextDay" type="button" class="secondary iconButton" data-i18n-label="nextDay">›</button><button id="historyToday" type="button" class="secondary" data-i18n="backToday"></button><span id="historyTimezone" class="muted"></span></div>
+   <div class="historyDeleteActions"><button id="historyDeleteSelected" type="button" class="secondary dangerText" hidden></button><button id="historyClearDate" type="button" class="secondary dangerText" data-i18n="clearDate"></button></div>
+  </div>
+  <button id="historyNewRecords" type="button" class="historyNewRecords secondary" hidden></button>
+  <div class="tableWrap"><table class="historyTable"><thead><tr><th class="checkCell"><input id="historySelectPage" type="checkbox" data-i18n-label="selectPage"></th><th data-i18n="account"></th><th data-i18n="at"></th><th data-i18n="result"></th><th data-i18n="reset"></th><th class="rowAction"><span class="srOnly" data-i18n="deleteRecord"></span></th></tr></thead><tbody id="history"></tbody></table></div>
+  <div class="historyPagination"><p id="historyCount" class="muted" role="status" aria-live="polite"></p><div class="historyPageControls"><button id="historyPrevPage" type="button" class="secondary" data-i18n="previousPage"></button><span id="historyPageNumber"></span><button id="historyNextPage" type="button" class="secondary" data-i18n="nextPage"></button></div></div>
+  <p class="footnote" data-i18n="footnote"></p>
+ </section>
+</div>
+<dialog id="historyDeleteDialog" aria-labelledby="historyDeleteTitle" aria-describedby="historyDeleteMessage"><h2 id="historyDeleteTitle" data-i18n="deleteTitle"></h2><p id="historyDeleteMessage"></p><p class="muted" data-i18n="deleteHelp"></p><div class="dialogActions"><button id="historyDeleteCancel" type="button" class="secondary" data-i18n="cancel"></button><button id="historyDeleteConfirm" type="button" class="dangerButton" data-i18n="confirmDelete"></button></div></dialog>
+<p id="feedback" role="status" aria-live="polite"></p><footer data-i18n="footer"></footer>
+</main></body></html>

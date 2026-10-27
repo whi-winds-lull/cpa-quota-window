@@ -1,0 +1,16 @@
+/* An explicit, searchable list also works where native datalist menus are unavailable. */
+.timezoneField input.cpaTimezoneTrigger{cursor:pointer;caret-color:transparent;padding-right:102px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 12px) 50%;background-size:4px 4px;background-repeat:no-repeat}
+.timezoneField:has(.cpaTimezoneTrigger) .offset{right:30px}
+.cpaTimezonePopup{position:fixed;z-index:50;display:flex;flex-direction:column;gap:0;max-height:var(--cpa-timezone-height,352px);padding:8px;border:1px solid var(--border-strong);border-radius:9px;background:var(--surface);color:var(--ink);box-shadow:0 8px 28px #0002;font-size:12px;line-height:1.5;overflow:hidden}
+.cpaTimezonePopup[hidden]{display:none!important}
+.cpaTimezonePopup .cpaTimezoneSearch{width:100%;flex:0 0 auto;min-height:35px;padding:7px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-subtle);color:var(--ink);font:inherit;outline-offset:1px}
+.cpaTimezoneSearch::placeholder{color:var(--faint)}
+.cpaTimezoneList{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;margin-top:7px}
+.cpaTimezoneOption{display:flex;align-items:center;gap:10px;min-height:35px;padding:8px 9px;border-radius:5px;cursor:pointer;border:1px solid transparent}
+.cpaTimezoneOption:hover,.cpaTimezoneOption.is-active{background:var(--surface-hover);border-color:var(--border)}
+.cpaTimezoneOption[aria-selected=true]{background:var(--accent-tint);color:var(--accent)}
+.cpaTimezoneOption[aria-selected=true].is-active{border-color:var(--accent-border)}
+.cpaTimezoneName{min-width:0;overflow-wrap:anywhere}
+.cpaTimezoneSelected{margin-left:auto;flex-shrink:0;font-size:13px;font-weight:600}
+.cpaTimezoneStatus{flex:0 0 auto;margin-top:6px;padding:5px 9px 2px;color:var(--faint);font-size:10px;border-top:1px solid var(--border)}
+@media(forced-colors:active){.cpaTimezoneOption.is-active{outline:1px solid Highlight}.cpaTimezoneOption[aria-selected=true]{color:Highlight}.cpaTimezonePopup{border-color:CanvasText}}

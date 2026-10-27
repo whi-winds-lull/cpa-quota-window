@@ -1,0 +1,110 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: build ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: darwin_amd64
+            os: darwin
+            arch: amd64
+            runner: macos-15-intel
+          - target: darwin_arm64
+            os: darwin
+            arch: arm64
+            runner: macos-15
+          - target: linux_amd64
+            os: linux
+            arch: amd64
+            runner: ubuntu-24.04
+          - target: linux_arm64
+            os: linux
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - target: windows_amd64
+            os: windows
+            arch: amd64
+            runner: windows-2022
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: 准备 Windows 工具链
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          $found = Get-ChildItem "C:\" -Directory -Filter "mingw*" -ErrorAction SilentlyContinue |
+            ForEach-Object { Join-Path $_.FullName "bin" } |
+            Where-Object { Test-Path (Join-Path $_ "x86_64-w64-mingw32-gcc.exe") } |
+            Select-Object -First 1
+          if (-not $found) {
+            Write-Output "未预装，改用 Chocolatey 安装"
+            choco install mingw --no-progress -y
+            $found = Get-ChildItem "C:\ProgramData\chocolatey\lib\mingw" -Recurse `
+              -Filter "x86_64-w64-mingw32-gcc.exe" -ErrorAction SilentlyContinue |
+              Select-Object -First 1 | ForEach-Object { $_.DirectoryName }
+          }
+          if (-not $found) { throw "找不到 MinGW-w64" }
+          Write-Output "MinGW: $found"
+          $found | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: 构建动态库
+        run: sh scripts/build.sh ${{ matrix.os }} ${{ matrix.arch }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 校验导出符号
+        continue-on-error: true
+        run: python scripts/check_exports.py dist/${{ matrix.target }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: dist/${{ matrix.target }}/
+          if-no-files-found: error
+
+  package:
+    name: package
+    needs: native
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 打包并生成校验和
+        run: python scripts/package.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: release/
+          if-no-files-found: error
